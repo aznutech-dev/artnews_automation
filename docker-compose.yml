@@ -1,0 +1,56 @@
+services:
+  api:
+    build: ./api
+    container_name: usaupdatenews_api
+    restart: always
+    env_file: ./api/.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./media:/app/media
+    networks:
+      - traefik_proxy
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.routers.usaupdatenews-api.rule=Host(`api.usaupdatenews.com`)"
+      - "traefik.http.routers.usaupdatenews-api.entrypoints=websecure"
+      - "traefik.http.routers.usaupdatenews-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.usaupdatenews-api.loadbalancer.server.port=8000"
+
+  web:
+    build: ./web
+    container_name: usaupdatenews_web
+    restart: always
+    env_file: ./web/.env.local
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.routers.usaupdatenews-web.rule=Host(`usaupdatenews.com`) || Host(`www.usaupdatenews.com`)"
+      - "traefik.http.routers.usaupdatenews-web.entrypoints=websecure"
+      - "traefik.http.routers.usaupdatenews-web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.usaupdatenews-web.loadbalancer.server.port=3000"
+
+  admin:
+    build: ./admin
+    container_name: usaupdatenews_admin
+    restart: always
+    env_file: ./admin/.env.local
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.routers.usaupdatenews-admin.rule=Host(`admin.usaupdatenews.com`)"
+      - "traefik.http.routers.usaupdatenews-admin.entrypoints=websecure"
+      - "traefik.http.routers.usaupdatenews-admin.tls.certresolver=letsencrypt"
+      - "traefik.http.services.usaupdatenews-admin.loadbalancer.server.port=3000"
+
+networks:
+  traefik_proxy:
+    external: true
+  internal:
+    driver: bridge
