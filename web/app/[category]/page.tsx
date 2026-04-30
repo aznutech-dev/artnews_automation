@@ -6,9 +6,9 @@ export const dynamic = "force-dynamic";
 export default async function CategoryPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ category: string }>;
 }) {
-  const { slug } = await params;
+  const { category: slug } = await params;
   const [categories, articles] = await Promise.all([
     api.listCategories().catch(() => []),
     api.listArticles({ categorySlug: slug, limit: 30 }).catch(() => []),
@@ -30,7 +30,7 @@ export default async function CategoryPage({
       ) : (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {articles.map((a) => (
-            <a key={a.id} href={`/article/${a.slug}`} className="group">
+            <a key={a.id} href={`/news/${a.slug}`} className="group">
               {a.featured_image_url ? (
                 <img
                   src={a.featured_image_url}

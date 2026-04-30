@@ -31,7 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </a>
             <nav className="flex flex-wrap gap-6 text-sm font-medium text-gray-700">
               {categories.map((c) => (
-                <a key={c.id} href={`/category/${c.slug}`} className="hover:text-red-700">
+                <a key={c.id} href={`/${c.slug}`} className="hover:text-red-700">
                   {c.name}
                 </a>
               ))}

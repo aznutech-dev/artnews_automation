@@ -15,7 +15,7 @@ export default async function HomePage() {
   return (
     <div className="space-y-12">
       {hero && (
-        <a href={`/article/${hero.slug}`} className="block group">
+        <a href={`/news/${hero.slug}`} className="block group">
           <article className="grid gap-6 md:grid-cols-2">
             {hero.featured_image_url ? (
               <img
@@ -49,7 +49,7 @@ export default async function HomePage() {
           <h2 className="mb-6 font-serif text-2xl font-semibold">Latest stories</h2>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {rest.map((a) => (
-              <a key={a.id} href={`/article/${a.slug}`} className="group">
+              <a key={a.id} href={`/news/${a.slug}`} className="group">
                 {a.featured_image_url ? (
                   <img
                     src={a.featured_image_url}
