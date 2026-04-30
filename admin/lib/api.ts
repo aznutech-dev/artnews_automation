@@ -1,7 +1,16 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+
+export function decodeJwt(token: string): Record<string, unknown> | null {
+  try {
+    const payload = token.split(".")[1];
+    const json = Buffer.from(payload.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8");
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
 const TOKEN_COOKIE = "usnews_token";
 const REFRESH_COOKIE = "usnews_refresh";
 
@@ -47,9 +56,6 @@ export async function apiFetch<T = unknown>(
 
   const res = await fetch(`${API_URL}${path}`, { ...init, headers, cache: "no-store" });
 
-  if (res.status === 401) {
-    redirect("/login");
-  }
   if (!res.ok) {
     let detail = "";
     try {

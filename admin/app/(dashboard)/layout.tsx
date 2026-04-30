@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { apiFetch, clearTokens } from "@/lib/api";
-import type { Me } from "@/lib/types";
+import { clearTokens, decodeJwt, getToken } from "@/lib/api";
 
 async function logoutAction() {
   "use server";
@@ -10,12 +9,16 @@ async function logoutAction() {
 }
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  let me: Me;
-  try {
-    me = await apiFetch<Me>("/api/me");
-  } catch {
-    redirect("/login");
-  }
+  const token = await getToken();
+  if (!token) redirect("/login");
+  const claims = decodeJwt(token);
+  if (!claims) redirect("/login");
+
+  const me = {
+    full_name: "Admin",
+    email: String(claims.sub ?? ""),
+    role: String(claims.role ?? "editor") as "admin" | "editor",
+  };
 
   return (
     <div className="flex min-h-screen">
