@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { api } from "@/lib/api";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function CategoryPage({
   params,
@@ -9,18 +9,19 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  let articles: Awaited<ReturnType<typeof api.listArticles>> = [];
-  try {
-    articles = await api.listArticles({ categorySlug: slug, limit: 30 });
-  } catch {
-    notFound();
-  }
+  const [categories, articles] = await Promise.all([
+    api.listCategories().catch(() => []),
+    api.listArticles({ categorySlug: slug, limit: 30 }).catch(() => []),
+  ]);
 
-  const categoryName = articles[0]?.category?.name ?? slug;
+  const category = categories.find((c) => c.slug === slug);
+  if (!category) notFound();
+
+  const categoryName = category.name;
 
   return (
     <div className="space-y-8">
-      <h1 className="font-serif text-3xl font-bold capitalize">{categoryName}</h1>
+      <h1 className="font-serif text-3xl font-bold">{categoryName}</h1>
 
       {articles.length === 0 ? (
         <p className="py-16 text-center text-gray-500">
