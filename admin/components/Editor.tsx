@@ -4,14 +4,30 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
   value: string;
   onChange: (html: string) => void;
 };
 
+async function uploadInline(file: File): Promise<string> {
+  const fd = new FormData();
+  fd.append("file", file);
+  const res = await fetch("/api/proxy/media/upload", { method: "POST", body: fd });
+  if (!res.ok) {
+    const detail = (await res.json().catch(() => ({}))).detail ?? res.statusText;
+    throw new Error(detail);
+  }
+  const data = (await res.json()) as { url: string };
+  return data.url;
+}
+
 export default function Editor({ value, onChange }: Props) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -24,9 +40,55 @@ export default function Editor({ value, onChange }: Props) {
       attributes: {
         class: "prose prose-slate max-w-none min-h-[400px] focus:outline-none px-4 py-3",
       },
+      handlePaste(view, event) {
+        const items = event.clipboardData?.items;
+        if (!items) return false;
+        for (const item of Array.from(items)) {
+          if (item.type.startsWith("image/")) {
+            const file = item.getAsFile();
+            if (file) {
+              event.preventDefault();
+              insertImageFromFile(file);
+              return true;
+            }
+          }
+        }
+        return false;
+      },
+      handleDrop(view, event) {
+        const files = event.dataTransfer?.files;
+        if (!files || files.length === 0) return false;
+        const file = files[0];
+        if (file.type.startsWith("image/")) {
+          event.preventDefault();
+          insertImageFromFile(file);
+          return true;
+        }
+        return false;
+      },
     },
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
   });
+
+  async function insertImageFromFile(file: File) {
+    if (!editor) return;
+    setError(null);
+    setUploading(true);
+    try {
+      const url = await uploadInline(file);
+      editor.chain().focus().setImage({ src: url, alt: file.name }).run();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (f) insertImageFromFile(f);
+    e.target.value = "";
+  }
 
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
@@ -39,7 +101,7 @@ export default function Editor({ value, onChange }: Props) {
 
   return (
     <div className="rounded-md border bg-white">
-      <div className="flex flex-wrap gap-1 border-b bg-slate-50 px-2 py-1">
+      <div className="flex flex-wrap items-center gap-1 border-b bg-slate-50 px-2 py-1">
         <Btn onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")}>
           B
         </Btn>
@@ -59,7 +121,7 @@ export default function Editor({ value, onChange }: Props) {
           1. List
         </Btn>
         <Btn onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive("blockquote")}>
-          " Quote
+          &quot; Quote
         </Btn>
         <Btn
           onClick={() => {
@@ -70,8 +132,26 @@ export default function Editor({ value, onChange }: Props) {
           Link
         </Btn>
         <Btn onClick={() => editor.chain().focus().unsetLink().run()}>Unlink</Btn>
+
+        <span className="mx-1 h-5 w-px bg-slate-300" />
+
+        <Btn onClick={() => fileInputRef.current?.click()}>
+          {uploading ? "Uploading…" : "🖼 Image"}
+        </Btn>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={onPickFile}
+        />
+
+        {error && <span className="ml-2 text-xs text-red-600">{error}</span>}
       </div>
       <EditorContent editor={editor} />
+      <p className="border-t bg-slate-50 px-3 py-1 text-xs text-slate-500">
+        Tip: drag &amp; drop or paste images directly into the editor.
+      </p>
     </div>
   );
 }
