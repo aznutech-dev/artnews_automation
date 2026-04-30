@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { api } from "@/lib/api";
 import "./globals.css";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: {
     default: "USA Update News",
