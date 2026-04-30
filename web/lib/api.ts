@@ -60,4 +60,5 @@ export const api = {
     return apiFetch<ArticleCard[]>(`/api/articles?${q.toString()}`);
   },
   getArticle: (slug: string) => apiFetch<Article>(`/api/articles/${slug}`),
+  listCategories: () => apiFetch<Category[]>("/api/categories"),
 };

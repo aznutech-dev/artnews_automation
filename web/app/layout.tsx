@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { api } from "@/lib/api";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -10,7 +11,14 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://usaupdatenews.com"),
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  let categories: Awaited<ReturnType<typeof api.listCategories>> = [];
+  try {
+    categories = await api.listCategories();
+  } catch {
+    categories = [];
+  }
+
   return (
     <html lang="en">
       <body className="min-h-screen bg-white text-gray-900">
@@ -19,11 +27,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <a href="/" className="font-serif text-2xl font-bold tracking-tight">
               USA Update News
             </a>
-            <nav className="flex gap-6 text-sm font-medium text-gray-700">
-              <a href="/category/politics">Politics</a>
-              <a href="/category/business">Business</a>
-              <a href="/category/tech">Tech</a>
-              <a href="/category/world">World</a>
+            <nav className="flex flex-wrap gap-6 text-sm font-medium text-gray-700">
+              {categories.map((c) => (
+                <a key={c.id} href={`/category/${c.slug}`} className="hover:text-red-700">
+                  {c.name}
+                </a>
+              ))}
             </nav>
           </div>
         </header>
