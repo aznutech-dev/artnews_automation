@@ -43,9 +43,8 @@ async def create_key(
     db.add(key)
     await db.commit()
     await db.refresh(key)
-    out = ApiKeyCreatedOnce.model_validate(key, from_attributes=True)
-    out.raw_key = raw
-    return out
+    base = ApiKeyOut.model_validate(key, from_attributes=True)
+    return ApiKeyCreatedOnce(**base.model_dump(), raw_key=raw)
 
 
 @router.post("/{key_id}/revoke", response_model=ApiKeyOut)
