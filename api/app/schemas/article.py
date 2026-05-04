@@ -17,6 +17,7 @@ class ArticleCreate(BaseModel):
 
     category_id: uuid.UUID | None = None
     category_slug: str | None = None
+    category_name: str | None = None  # used to auto-create category if slug doesn't exist (agent imports)
     tags: list[str] = []  # tag slugs or names
     source_url: str | None = None
 

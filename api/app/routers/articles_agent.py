@@ -37,7 +37,12 @@ async def agent_create_article(
     slug = await unique_slug(db, payload.slug or payload.title)
     clean_body = sanitize_html(payload.body)
 
-    category = await resolve_category(db, payload.category_id, payload.category_slug)
+    category = await resolve_category(
+        db,
+        payload.category_id,
+        payload.category_slug,
+        auto_create_name=payload.category_name,
+    )
     tags = await get_or_create_tags(db, payload.tags)
 
     article = Article(

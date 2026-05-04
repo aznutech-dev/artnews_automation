@@ -48,11 +48,23 @@ async def get_or_create_tags(db: AsyncSession, names: list[str]) -> list[Tag]:
 
 
 async def resolve_category(
-    db: AsyncSession, category_id=None, category_slug: str | None = None
+    db: AsyncSession,
+    category_id=None,
+    category_slug: str | None = None,
+    auto_create_name: str | None = None,
 ) -> Category | None:
     if category_id:
         return await db.get(Category, category_id)
     if category_slug:
         result = await db.execute(select(Category).where(Category.slug == category_slug))
-        return result.scalar_one_or_none()
+        existing = result.scalar_one_or_none()
+        if existing:
+            return existing
+        # Auto-create only when caller provided a human-readable name
+        # (used by agent imports so source categories sort themselves).
+        if auto_create_name:
+            cat = Category(name=auto_create_name.strip(), slug=category_slug)
+            db.add(cat)
+            await db.flush()
+            return cat
     return None
