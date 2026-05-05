@@ -74,6 +74,14 @@ export function analyzeSeo(
   const first10PercentWords = textContent.split(" ").slice(0, Math.max(10, Math.floor(wordCount * 0.1))).join(" ");
   addCheck("first-10-percent", "Focus keyword appears in the first 10% of the content", first10PercentWords.includes(keyword), "high");
 
+  // Paragraph Length Check
+  const paragraphs = bodyHtml.match(/<p[^>]*>(.*?)<\/p>/gi) || [];
+  const hasLongParagraphs = paragraphs.some(p => {
+    const pText = p.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    return pText.split(" ").filter(w => w.length > 0).length > 150;
+  });
+  addCheck("paragraph-length", "All paragraphs are short and readable (under 150 words)", paragraphs.length > 0 && !hasLongParagraphs, "medium");
+
   // 5. HTML Element Checks
   // H2/H3 Check
   const headings = bodyHtml.match(/<h[23][^>]*>(.*?)<\/h[23]>/gi) || [];
