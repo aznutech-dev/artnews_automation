@@ -97,6 +97,7 @@ class Article(Base, UUIDPK, TimestampMixin):
     is_breaking: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # SEO
+    focus_keyword: Mapped[str | None] = mapped_column(String(255), nullable=True)
     meta_title: Mapped[str | None] = mapped_column(String(255), nullable=True)
     meta_description: Mapped[str | None] = mapped_column(String(500), nullable=True)
     og_image_url: Mapped[str | None] = mapped_column(String(1000), nullable=True)

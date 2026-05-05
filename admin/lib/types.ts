@@ -31,6 +31,7 @@ export type Article = ArticleCard & {
   body: string;
   tags: Tag[];
   source: ArticleSource;
+  focus_keyword: string | null;
   meta_title: string | null;
   meta_description: string | null;
   og_image_url: string | null;

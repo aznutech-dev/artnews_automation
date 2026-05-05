@@ -66,6 +66,7 @@ class ArticleOut(BaseModel):
     is_featured: bool
     is_breaking: bool
     published_at: datetime | None
+    focus_keyword: str | None
     meta_title: str | None
     meta_description: str | None
     og_image_url: str | None
@@ -92,3 +93,4 @@ class ArticleCard(BaseModel):
     is_breaking: bool
     published_at: datetime | None
     reading_time_minutes: int
+s: int

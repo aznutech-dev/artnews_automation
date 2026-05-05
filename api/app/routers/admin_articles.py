@@ -94,6 +94,7 @@ async def create_article(
         status=ArticleStatus.draft,
         is_featured=payload.is_featured,
         is_breaking=payload.is_breaking,
+        focus_keyword=payload.focus_keyword,
         meta_title=payload.meta_title,
         meta_description=payload.meta_description,
         og_image_url=payload.og_image_url,

@@ -228,6 +228,15 @@ export default function ArticleForm({ article, categories }: Props) {
         </div>
       </details>
 
+      <SeoPanel 
+        focusKeyword={focusKeyword} 
+        onChangeFocusKeyword={setFocusKeyword} 
+        title={title} 
+        slug={slug} 
+        metaDescription={metaDescription || excerpt} 
+        body={body} 
+      />
+
       <div className="sticky bottom-0 -mx-8 flex items-center justify-end gap-3 border-t bg-white px-8 py-3">
         {article && (
           <button
