@@ -36,6 +36,7 @@ export default function ArticleForm({ article, categories }: Props) {
   const [featuredImageAlt, setFeaturedImageAlt] = useState(article?.featured_image_alt ?? "");
   const [isFeatured, setIsFeatured] = useState(article?.is_featured ?? false);
   const [isBreaking, setIsBreaking] = useState(article?.is_breaking ?? false);
+  const [focusKeyword, setFocusKeyword] = useState(article?.focus_keyword ?? "");
   const [metaTitle, setMetaTitle] = useState(article?.meta_title ?? "");
   const [metaDescription, setMetaDescription] = useState(article?.meta_description ?? "");
 
@@ -51,6 +52,7 @@ export default function ArticleForm({ article, categories }: Props) {
       featured_image_alt: featuredImageAlt || null,
       is_featured: isFeatured,
       is_breaking: isBreaking,
+      focus_keyword: focusKeyword || null,
       meta_title: metaTitle || null,
       meta_description: metaDescription || null,
     };
