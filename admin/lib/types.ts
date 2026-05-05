@@ -20,6 +20,7 @@ export type ArticleCard = {
   featured_image_url: string | null;
   featured_image_alt: string | null;
   category: Category | null;
+  status: ArticleStatus;
   is_featured: boolean;
   is_breaking: boolean;
   published_at: string | null;
@@ -30,7 +31,6 @@ export type Article = ArticleCard & {
   body: string;
   tags: Tag[];
   source: ArticleSource;
-  status: ArticleStatus;
   meta_title: string | null;
   meta_description: string | null;
   og_image_url: string | null;

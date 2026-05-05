@@ -87,6 +87,7 @@ class ArticleCard(BaseModel):
     featured_image_url: str | None
     featured_image_alt: str | None
     category: CategoryOut | None
+    status: ArticleStatus
     is_featured: bool
     is_breaking: bool
     published_at: datetime | None

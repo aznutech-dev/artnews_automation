@@ -57,6 +57,7 @@ export default async function ArticlesPage({
             <tr>
               <th className="px-4 py-2">Title</th>
               <th className="px-4 py-2">Category</th>
+              <th className="px-4 py-2">Status</th>
               <th className="px-4 py-2">Date</th>
             </tr>
           </thead>
@@ -70,6 +71,15 @@ export default async function ArticlesPage({
                   <div className="mt-0.5 text-xs text-slate-500">{a.excerpt.slice(0, 80)}</div>
                 </td>
                 <td className="px-4 py-3">{a.category?.name ?? "—"}</td>
+                <td className="px-4 py-3">
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                    a.status === 'published' ? 'bg-green-100 text-green-800' :
+                    a.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {a.status}
+                  </span>
+                </td>
                 <td className="px-4 py-3 text-xs text-slate-500">
                   {a.published_at
                     ? new Date(a.published_at).toLocaleDateString()
@@ -79,7 +89,7 @@ export default async function ArticlesPage({
             ))}
             {articles.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-10 text-center text-slate-500">
+                <td colSpan={5} className="px-4 py-10 text-center text-slate-500">
                   No articles match your filters.
                 </td>
               </tr>
