@@ -1,7 +1,7 @@
 """add focus_keyword to articles
 
 Revision ID: 20260505_0002
-Revises: 20260430_0001
+Revises: 0001_initial
 Create Date: 2026-05-05 10:00:00.000000
 
 """
