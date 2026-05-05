@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import Editor from "./Editor";
+import SeoPanel from "./SeoPanel";
 import type { Article, Category } from "@/lib/types";
 
 type Props = {
